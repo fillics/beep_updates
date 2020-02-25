@@ -73,10 +73,10 @@ while(controllo!=2):
 	if lista != new_lista:
 		print("Il nuovo file e': ")
 		print(''.join(lista[0]))
-		notify.send('Nuovo file caricato su Beep')
+		notify.send('Nuovo file caricato su Beep: ', lista[0])
 		link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-		msg = MIMEText("Ciao, e' appena stato caricato su Beep il seguente file", lista[0], " e il link per scaricarlo e' il seguente: ", link)
+		msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
 		msg['From'] = email_user
 		msg['To'] = email_send
 		msg['subject'] = subject
