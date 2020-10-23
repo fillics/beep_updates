@@ -28,3 +28,6 @@ time.sleep(x)
 ```
 
 Ogni x secondi, la pagina viene aggiornata e controlla se sono stati caricati nuovi file. Se è presente un nuovo file, il bot manda un'**email** con il nome del file aggiunto e il link per scaricarlo, oppure una **notifica** con il comando: ```notify.send('Nuovo file caricato su Beep')```. (*per ricevere la notifica, si dovranno eseguire due istruzioni molto facili e veloci, trovabili sul sito [notify.run](https://notify.run/)*)
+
+## Note
+Funziona con Python 3
