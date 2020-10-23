@@ -43,7 +43,8 @@ sleep(3)
 
 # Chiedere quale corso seguire
 corsi_disponibili = []
-corsi = browser.find_elements_by_xpath("//*[contains(text(), anno_accademico)]")
+#corsi = browser.find_elements_by_xpath("//*[contains(text(), anno_accademico)]")
+corsi = browser.find_elements_by_xpath("//*[contains(text(), '[2020-21]')]")
 for x in corsi:
 	corsi_disponibili.append(x.text)
 
