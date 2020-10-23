@@ -50,7 +50,7 @@ print('\n'.join(corsi_disponibili))
 sleep(2)
 
 # Chiedere quale corso controllare
-testo = raw_input("Quale corso vuoi tenere sotto controllo? ")
+testo = input("Quale corso vuoi tenere sotto controllo? ")
 corso = testo.upper()
 
 
