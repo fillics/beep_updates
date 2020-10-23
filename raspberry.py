@@ -2,16 +2,19 @@ from selenium import webdriver
 from selenium.webdriver import Firefox
 from time import sleep
 import os, time, smtplib
-from secrets import codice_utente, password_utente
-from secrets import email_user, email_pass, email_send
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
-from notify_run import Notify
-notify = Notify()
+from settings import notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico
 
-					# DA LANCIARE CON PYTHON3
+if notif_push == 'true':
+	from notify_run import Notify
+	notify = Notify()
+
+if notif_email == 'true':
+	from settings import email_user, email_pass, email_send
+	from email.mime.text import MIMEText
+	from email.mime.multipart import MIMEMultipart
+	from email.mime.base import MIMEBase
+	from email import encoders
+
 
 controllo = 0
 volte = 0
@@ -40,7 +43,7 @@ sleep(3)
 
 # Chiedere quale corso seguire
 corsi_disponibili = []
-corsi = browser.find_elements_by_xpath("//*[contains(text(), '[2019-20]')]")
+corsi = browser.find_elements_by_xpath("//*[contains(text(), '[2020-21]')]")
 for x in corsi:
 	corsi_disponibili.append(x.text)
 
@@ -76,23 +79,28 @@ while(controllo!=2):
 	if lista != new_lista:
 		print("Il nuovo file e': ")
 		print(''.join(lista[0]))
-		notify.send('Nuovo file caricato su Beep: ', lista[0])
-		link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-		msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
-		msg['From'] = email_user
-		msg['To'] = email_send
-		msg['subject'] = subject
-		subject = 'Nuovo file caricato su '+corso
-		server = smtplib.SMTP('smtp.gmail.com:587')
-		server.starttls()
-		server.ehlo()
-		server.login(email_user, email_pass)
-		server.sendmail(email_user, email_send, msg.as_string())
-		server.quit()
+		# Invia notifica WebPush
+		if notif_push == 'true':
+			notify.send('Nuovo file caricato su Beep: ', lista[0])
+			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+
+		#Invia notifica Email
+		if notif_email == 'true':
+			msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
+			msg['From'] = email_user
+			msg['To'] = email_send
+			msg['subject'] = subject
+			subject = 'Nuovo file caricato su '+corso
+			server = smtplib.SMTP('smtp.gmail.com:587')
+			server.starttls()
+			server.ehlo()
+			server.login(email_user, email_pass)
+			server.sendmail(email_user, email_send, msg.as_string())
+			server.quit()
 
 	browser.refresh()
-	time.sleep(600)
+	time.sleep(refresh_rate)
 	volte= volte + 1
 	print('Ho refreshato ', volte, 'volte')
 
