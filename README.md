@@ -21,13 +21,24 @@ Successivamente, lanciando il file [beep_updates.py](beep_updates.py) *(consigli
 testo = raw_input("Quale corso vuoi tenere sotto controllo? ")
 ```
 
-Si può impostare ogni quanto fargli aggiornare la pagina, andando a inserire, al posto della x, l'intervallo di aggiornamento espresso in secondi. 
+Si può impostare ogni quanto fargli aggiornare la pagina, modificando l'apposita opzione nel file `settings.py`
+
+Ogni x secondi, la pagina viene aggiornata e controlla se sono stati caricati nuovi file. Se è presente un nuovo file, il bot manda un'**email** con il nome del file aggiunto e il link per scaricarlo, oppure una **notifica** con il comando: ```notify.send('Nuovo file caricato su Beep')```. (*per ricevere la notifica, si dovranno eseguire due istruzioni molto facili e veloci, trovabili sul sito [notify.run](https://notify.run/), e brevemente descritte di seguito*)
+
+## Setup di Notify.run
+Installare Notify.run:
 ```
-browser.refresh()
-time.sleep(x)
+pip3 install notify-run
+```
+Attivare un nuovo canale:
+```
+notify-run register
 ```
 
-Ogni x secondi, la pagina viene aggiornata e controlla se sono stati caricati nuovi file. Se è presente un nuovo file, il bot manda un'**email** con il nome del file aggiunto e il link per scaricarlo, oppure una **notifica** con il comando: ```notify.send('Nuovo file caricato su Beep')```. (*per ricevere la notifica, si dovranno eseguire due istruzioni molto facili e veloci, trovabili sul sito [notify.run](https://notify.run/)*)
+Alternativamente, per indirizzare le notifiche a un canale già esistente:
+<pre>
+  notify-run configure https://notify.run/<b>[codice canale]</b>
+</pre>
 
 ## Note
 Funziona con Python 3
