@@ -1,14 +1,14 @@
 from selenium.webdriver import Chrome
 from time import sleep
 import os, time, smtplib
-from secrets import notif_push, notif_email, codice_utente, password_utente, refresh_rate
+from settings import notif_push, notif_email, codice_utente, password_utente, refresh_rate
 
 if notif_push == 'true':
 	from notify_run import Notify
 	notify = Notify()
 
 if notif_email == 'true':
-	from secrets import email_user, email_pass, email_send
+	from settings import email_user, email_pass, email_send
 	from email.mime.text import MIMEText
 	from email.mime.multipart import MIMEMultipart
 	from email.mime.base import MIMEBase
