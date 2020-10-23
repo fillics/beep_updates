@@ -18,7 +18,7 @@ Per prima cosa, si devono inserire le proprie credenziali di accesso nel file [s
 Successivamente, lanciando il file [beep_updates.py](beep_updates.py) *(consiglio di usare **Linux** o un **Raspberry**, che può rimanere sempre accesso senza troppi problemi, usando il file [raspberry.py](raspberry.py))*, il bot si collegherà direttamente alla pagina Beep inserendo in automatico le credenziali, per poi chiedere quale corso controllare, inserendo il nome del prof o il nome della materia.
 
 ```
-testo = raw_input("Quale corso vuoi tenere sotto controllo? ")
+testo = input("Quale corso vuoi tenere sotto controllo? ")
 ```
 
 Si può impostare ogni quanto fargli aggiornare la pagina, modificando l'apposita opzione nel file `settings.py`
