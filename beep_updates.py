@@ -1,14 +1,21 @@
 from selenium.webdriver import Chrome
 from time import sleep
 import os, time, smtplib
+from secrets import notif_push, notif_email
+
 from secrets import codice_utente, password_utente
-from secrets import email_user, email_pass, email_send
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
-from notify_run import Notify
-notify = Notify()
+
+if notif_push == 'true':
+	from notify_run import Notify
+	notify = Notify()
+
+if notif_email == 'true':
+	from secrets import email_user, email_pass, email_send
+	from email.mime.text import MIMEText
+	from email.mime.multipart import MIMEMultipart
+	from email.mime.base import MIMEBase
+	from email import encoders
+
 
 controllo = 0
 volte = 0
@@ -73,20 +80,26 @@ while(controllo!=2):
 	if lista != new_lista:
 		print("Il nuovo file e': ")
 		print(''.join(lista[0]))
-		notify.send('Nuovo file caricato su Beep: ', lista[0])
-		link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+		
+		# Invia notifica WebPush
+		if notif_push == 'true':
+			notify.send('Nuovo file caricato su Beep: ', lista[0])
+			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-		msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
-		msg['From'] = email_user
-		msg['To'] = email_send
-		msg['subject'] = subject
-		subject = 'Nuovo file caricato su '+corso
-		server = smtplib.SMTP('smtp.gmail.com:587')
-		server.starttls()
-		server.ehlo()
-		server.login(email_user, email_pass)
-		server.sendmail(email_user, email_send, msg.as_string())
-		server.quit()
+		#Invia notifica Email
+		if notif_email == 'true':
+			msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
+			msg['From'] = email_user
+			msg['To'] = email_send
+			msg['subject'] = subject
+			subject = 'Nuovo file caricato su '+corso
+			server = smtplib.SMTP('smtp.gmail.com:587')
+			server.starttls()
+			server.ehlo()
+			server.login(email_user, email_pass)
+			server.sendmail(email_user, email_send, msg.as_string())
+			server.quit()
+		
 		controllo = 2
 
 
