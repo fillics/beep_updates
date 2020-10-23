@@ -1,7 +1,7 @@
 from selenium.webdriver import Chrome
 from time import sleep
 import os, time, smtplib
-from settings import notif_push, notif_email, codice_utente, password_utente, refresh_rate
+from settings import notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico
 
 if notif_push == 'true':
 	from notify_run import Notify
@@ -43,7 +43,7 @@ sleep(3)
 
 # Chiedere quale corso seguire
 corsi_disponibili = []
-corsi = browser.find_elements_by_xpath("//*[contains(text(), '[2019-20]')]")
+corsi = browser.find_elements_by_xpath("//*[contains(text(), anno_accademico)]")
 for x in corsi:
 	corsi_disponibili.append(x.text)
 
