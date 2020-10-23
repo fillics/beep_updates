@@ -1,9 +1,7 @@
 from selenium.webdriver import Chrome
 from time import sleep
 import os, time, smtplib
-from secrets import notif_push, notif_email
-
-from secrets import codice_utente, password_utente
+from secrets import notif_push, notif_email, codice_utente, password_utente, refresh_rate
 
 if notif_push == 'true':
 	from notify_run import Notify
@@ -104,7 +102,7 @@ while(controllo!=2):
 
 
 	browser.refresh()
-	time.sleep(30)
+	time.sleep(refresh_rate)
 	volte= volte + 1
 	print('Ho refreshato ', volte, 'volte')
 
