@@ -14,7 +14,7 @@ notif_email = 'false'
 refresh_rate = 30 # tempo d'attesa (in secondi) tra ogni controllo
 anno_accademico = "'2020-21'"
 pi_mode = 'false'
-
+savefile_path = 'listaDocumenti.txt'
 
 ## Impostazioni  Email ##
 # Mittente

@@ -1,6 +1,6 @@
 from time import sleep
-import os, time, smtplib
-from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico
+import os, time, smtplib, os.path, pickle
+from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico, savefile_path
 
 if pi_mode == 'true':
 	from selenium import webdriver
@@ -26,7 +26,7 @@ controllo = 0
 volte = 0
 
 # Apertura Browser
-browser = webdriver.Firefox() if pi_mode == 'true' else browser = Chrome()
+browser = webdriver.Firefox() if pi_mode == 'true' else Chrome()
 url = 'https://beep.metid.polimi.it/'
 browser.get(url) # connessione a beep
 if pi_mode == 'true': browser.minimize_window() # iconizzare il browser
@@ -70,29 +70,30 @@ corso = testo.upper()
 button = browser.find_element_by_xpath("//*[contains(text(),'"+ corso +"')]")
 button.click()
 
-while(controllo!=2):
+# Verifica Novità
+lista = []
+documenti = browser.find_elements_by_xpath("//a[contains(@href, 'https://beep.metid.polimi.it/c/document_library/get_file?groupId=')]") # ottieni documenti
+for a in documenti:
+	lista.append(a.text) # inserisci i documenti nella lista
 
-	lista = []
-	documenti = browser.find_elements_by_xpath("//a[contains(@href, 'https://beep.metid.polimi.it/c/document_library/get_file?groupId=')]")
-	for a in documenti:
-	    lista.append(a.text)
+if os.path.isfile(savefile_path): # se esiste già un file coi dati
+	with open(savefile_path, 'rb') as file:
+		vecchi_dati = pickle.load(file) # recupera i dati
 
-	if controllo==0:
-		new_lista = list(lista)
-
-	controllo=1
-
-	if lista != new_lista:
+	if lista != vecchi_dati : # ci sono stati cambiamenti su beep
+		print("Dati difformi!\n")
 		print("Il nuovo file e': ")
 		print(''.join(lista[0]))
 
 		# Invia notifica WebPush
 		if notif_push == 'true':
+			print("Invio notifica push...")
 			notify.send('Nuovo file caricato su Beep: ', lista[0])
 			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
 		#Invia notifica Email
 		if notif_email == 'true':
+			print("Invio email...")
 			msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
 			msg['From'] = email_user
 			msg['To'] = email_send
@@ -105,13 +106,16 @@ while(controllo!=2):
 			server.sendmail(email_user, email_send, msg.as_string())
 			server.quit()
 
-		controllo = 2
+	else: # non ci sono stati cambiamenti su beep
+		print("Dati corrispondenti --> niente di nuovo su beep.")
 
+else: # è la prima volta che runniamo il programma
+	print("Non è stata trovata una pre-esistente lista di documenti su beep")
 
-	browser.refresh()
-	time.sleep(refresh_rate)
-	volte= volte + 1
-	print('Ho refreshato ', volte, 'volte')
+print("\nSalvo lista documenti...")
+with open(savefile_path, 'wb') as file:
+	pickle.dump(lista, file) # salva i dati su file
+print("fatto!\n")
 
-sleep(5)
+sleep(3)
 browser.close()
