@@ -13,6 +13,7 @@ notif_email = 'false'
 ## Impostazioni Progamma ##
 refresh_rate = 30 # tempo d'attesa (in secondi) tra ogni controllo
 anno_accademico = "'2020-21'"
+pi_mode = 'false'
 
 
 ## Impostazioni  Email ##

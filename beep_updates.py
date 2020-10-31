@@ -1,7 +1,14 @@
-from selenium.webdriver import Chrome
 from time import sleep
 import os, time, smtplib
-from settings import notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico
+from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico
+
+if pi_mode == 'true':
+	from selenium import webdriver
+	from selenium.webdriver import Firefox
+else:
+	from selenium.webdriver import Chrome
+
+
 
 if notif_push == 'true':
 	from notify_run import Notify
@@ -19,11 +26,10 @@ controllo = 0
 volte = 0
 
 # Apertura Browser
-browser = Chrome()
+browser = webdriver.Firefox() if pi_mode == 'true' else browser = Chrome()
 url = 'https://beep.metid.polimi.it/'
-browser.get(url)
-# Per ridurre a icona il browser
-# browser.minimize_window()
+browser.get(url) # connessione a beep
+if pi_mode == 'true': browser.minimize_window() # iconizzare il browser
 sleep(2)
 
 # Click del pulsante Login
@@ -79,7 +85,7 @@ while(controllo!=2):
 	if lista != new_lista:
 		print("Il nuovo file e': ")
 		print(''.join(lista[0]))
-		
+
 		# Invia notifica WebPush
 		if notif_push == 'true':
 			notify.send('Nuovo file caricato su Beep: ', lista[0])
@@ -98,7 +104,7 @@ while(controllo!=2):
 			server.login(email_user, email_pass)
 			server.sendmail(email_user, email_send, msg.as_string())
 			server.quit()
-		
+
 		controllo = 2
 
 
