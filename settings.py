@@ -2,6 +2,9 @@
 codice_utente = your_codice_utente
 password_utente = 'your_password'
 
+anno_accademico = "'2020-21'" # [UNUSED!]
+corso_scelto = 'elettrotecnica'
+
 
 
 ## Scelta tipologia di notifiche ##
@@ -11,10 +14,11 @@ notif_email = 'false'
 
 
 ## Impostazioni Progamma ##
-refresh_rate = 30 # tempo d'attesa (in secondi) tra ogni controllo
-anno_accademico = "'2020-21'"
+headless_mode = 'true'
 pi_mode = 'false'
 savefile_path = 'listaDocumenti.txt'
+refresh_rate = 30 # [UNUSED!] tempo d'attesa (in secondi) tra ogni controllo
+
 
 ## Impostazioni  Email ##
 # Mittente

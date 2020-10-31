@@ -1,6 +1,6 @@
 from time import sleep
 import os, time, smtplib, os.path, pickle
-from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico, savefile_path
+from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico, savefile_path, headless_mode, corso_scelto
 
 if pi_mode == 'true':
 	from selenium import webdriver
@@ -61,12 +61,15 @@ sleep(0.5)
 print('\n'.join(corsi_disponibili))
 sleep(2)
 
-# Chiedere quale corso controllare
-testo = input("Quale corso vuoi tenere sotto controllo? ")
-corso = testo.upper()
+if headless_mode == 'true':
+	corso = corso_scelto.upper()
+else:
+	testo = input("Quale corso vuoi tenere sotto controllo? ") # Chiedere quale corso controllare
+	corso = testo.upper()
 
 
 # Click della pagina del corso che si vuole controllare
+print("Mi dirigo verso:" + corso)
 button = browser.find_element_by_xpath("//*[contains(text(),'"+ corso +"')]")
 button.click()
 
