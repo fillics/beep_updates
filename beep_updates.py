@@ -1,6 +1,6 @@
 from time import sleep
 import os, time, smtplib, os.path, pickle
-from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, refresh_rate, anno_accademico, savefile_path, headless_mode, corso_scelto
+from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, anno_accademico, percorso, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
 
 if pi_mode == 'true':
 	from selenium import webdriver
@@ -61,64 +61,68 @@ sleep(0.5)
 print('\n'.join(corsi_disponibili))
 sleep(2)
 
-if headless_mode == 'true':
-	corso = corso_scelto.upper()
-else:
-	testo = input("Quale corso vuoi tenere sotto controllo? ") # Chiedere quale corso controllare
-	corso = testo.upper()
+corsi_desiderati = [corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7]
+for i in range(1, quanti_corsi):
+	corso = corsi_desiderati[i].upper() # seleziono il corso
+	savefile_path = percorso + '_' + str(i) + '.txt' # costruisco il percorso al file di salvataggio
 
+	# Click della pagina del corso che si vuole controllare
+	print("Mi dirigo verso:" + corso)
+	button = browser.find_element_by_xpath("//*[contains(text(),'"+ corso +"')]")
+	button.click()
 
-# Click della pagina del corso che si vuole controllare
-print("Mi dirigo verso:" + corso)
-button = browser.find_element_by_xpath("//*[contains(text(),'"+ corso +"')]")
-button.click()
+	# Verifica Novità
+	lista = []
+	documenti = browser.find_elements_by_xpath("//a[contains(@href, 'https://beep.metid.polimi.it/c/document_library/get_file?groupId=')]") # ottieni documenti
+	for a in documenti:
+		lista.append(a.text) # inserisci i documenti nella lista
 
-# Verifica Novità
-lista = []
-documenti = browser.find_elements_by_xpath("//a[contains(@href, 'https://beep.metid.polimi.it/c/document_library/get_file?groupId=')]") # ottieni documenti
-for a in documenti:
-	lista.append(a.text) # inserisci i documenti nella lista
+	if os.path.isfile(savefile_path): # se esiste già un file coi dati
+		with open(savefile_path, 'rb') as file:
+			vecchi_dati = pickle.load(file) # recupera i dati
 
-if os.path.isfile(savefile_path): # se esiste già un file coi dati
-	with open(savefile_path, 'rb') as file:
-		vecchi_dati = pickle.load(file) # recupera i dati
+		if lista != vecchi_dati : # ci sono stati cambiamenti su beep
+			print("Dati difformi!\n")
+			print("Il nuovo file e': ")
+			print(''.join(lista[0]))
 
-	if lista != vecchi_dati : # ci sono stati cambiamenti su beep
-		print("Dati difformi!\n")
-		print("Il nuovo file e': ")
-		print(''.join(lista[0]))
+			# Invia notifica WebPush
+			if notif_push == 'true':
+				print("Invio notifica push...")
+				notify.send('Nuovo file caricato su Beep: ', lista[0])
+				link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-		# Invia notifica WebPush
-		if notif_push == 'true':
-			print("Invio notifica push...")
-			notify.send('Nuovo file caricato su Beep: ', lista[0])
-			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+			#Invia notifica Email
+			if notif_email == 'true':
+				print("Invio email...")
+				msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
+				msg['From'] = email_user
+				msg['To'] = email_send
+				msg['subject'] = subject
+				subject = 'Nuovo file caricato su '+corso
+				server = smtplib.SMTP('smtp.gmail.com:587')
+				server.starttls()
+				server.ehlo()
+				server.login(email_user, email_pass)
+				server.sendmail(email_user, email_send, msg.as_string())
+				server.quit()
 
-		#Invia notifica Email
-		if notif_email == 'true':
-			print("Invio email...")
-			msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
-			msg['From'] = email_user
-			msg['To'] = email_send
-			msg['subject'] = subject
-			subject = 'Nuovo file caricato su '+corso
-			server = smtplib.SMTP('smtp.gmail.com:587')
-			server.starttls()
-			server.ehlo()
-			server.login(email_user, email_pass)
-			server.sendmail(email_user, email_send, msg.as_string())
-			server.quit()
+		else: # non ci sono stati cambiamenti su beep
+			print("Dati corrispondenti --> niente di nuovo su beep.")
 
-	else: # non ci sono stati cambiamenti su beep
-		print("Dati corrispondenti --> niente di nuovo su beep.")
+	else: # è la prima volta che runniamo il programma
+		print("Non è stata trovata una pre-esistente lista di documenti su beep")
 
-else: # è la prima volta che runniamo il programma
-	print("Non è stata trovata una pre-esistente lista di documenti su beep")
+	print("\nSalvo lista documenti...")
+	with open(savefile_path, 'wb') as file:
+		pickle.dump(lista, file) # salva i dati su file
+	print("fatto!\nAl prossimo corso!\n")
+	sleep(2)
 
-print("\nSalvo lista documenti...")
-with open(savefile_path, 'wb') as file:
-	pickle.dump(lista, file) # salva i dati su file
-print("fatto!\n")
+	browser.back()
+
+print("\n\nFinito! Ciao!\n")
+
 
 sleep(3)
 browser.close()
