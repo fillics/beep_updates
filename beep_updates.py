@@ -72,8 +72,8 @@ print('\n'.join(corsi_disponibili))
 sleep(2)
 
 corsi_desiderati = [corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7]
-print("\nHai specificato di voler seguire " + quanti_corsi + " corsi.\nLi cercherò come specificato nelle impostazioni.\n")
-for i in range(1, quanti_corsi):
+print("\nHai specificato di voler seguire " + str(quanti_corsi) + " corsi.\nLi cercherò come specificato nelle impostazioni.\n")
+for i in range(0, quanti_corsi):
 	corso = corsi_desiderati[i].upper() # seleziono il corso
 	savefile_path = percorso + '_' + str(i) + '.txt' # costruisco il percorso al file di salvataggio
 	l.info("File path is: " + savefile_path)
@@ -125,7 +125,7 @@ for i in range(1, quanti_corsi):
 	else: # è la prima volta che runniamo il programma
 		print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
 
-	print("\nSalvo lista documenti...")
+	print("Salvo lista documenti...")
 	with open(savefile_path, 'wb') as file:
 		pickle.dump(lista, file) # salva i dati su file
 	print("Fatto! Al prossimo corso!\n")
