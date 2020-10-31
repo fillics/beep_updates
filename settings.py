@@ -3,7 +3,7 @@ codice_utente = your_codice_utente
 password_utente = 'your_password'
 
 anno_accademico = "'2020-21'" # [UNUSED!]
-corso_scelto = 'elettrotecnica'
+corso_scelto = 'your_course_name' # NB: sono sufficienti anche solo alcune lettere 
 
 
 
