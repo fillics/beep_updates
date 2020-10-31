@@ -1,33 +1,42 @@
+print("-o-o-o-o- Beep Updates -o-o-o-o-o-")
+
+import logging as l
+
+l.info("\nImporting...")
 from time import sleep
 import os, time, smtplib, os.path, pickle
 from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, anno_accademico, percorso, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
 
 if pi_mode == 'true':
+	l.info("pi mode is ON")
 	from selenium import webdriver
 	from selenium.webdriver import Firefox
 else:
+	l.info("pi mode is OFF")
 	from selenium.webdriver import Chrome
 
 
 
 if notif_push == 'true':
+	l.info("push notifs ON")
 	from notify_run import Notify
 	notify = Notify()
 
 if notif_email == 'true':
+	l.info("email notifs ON")
 	from settings import email_user, email_pass, email_send
 	from email.mime.text import MIMEText
 	from email.mime.multipart import MIMEMultipart
 	from email.mime.base import MIMEBase
 	from email import encoders
+l.info("Done importing!\n")
 
-
-controllo = 0
-volte = 0
 
 # Apertura Browser
+l.info("\nOpening browser...")
 browser = webdriver.Firefox() if pi_mode == 'true' else Chrome()
 url = 'https://beep.metid.polimi.it/'
+l.info("\nNavigating...")
 browser.get(url) # connessione a beep
 if pi_mode == 'true': browser.minimize_window() # iconizzare il browser
 sleep(2)
@@ -38,6 +47,7 @@ button.click()
 sleep(2)
 
 # Riempimento con le credenziali
+print("\nEseguo il login...")
 login_field = browser.find_element_by_xpath("//input[@name=\"login\"]").send_keys(codice_utente)
 pw_field = browser.find_element_by_xpath("//input[@name=\"password\"]").send_keys(password_utente)
 sleep(2)
@@ -56,15 +66,17 @@ for x in corsi:
 
 corsi_disponibili = list(dict.fromkeys(corsi_disponibili))
 
-print("I tuoi corsi disponibili sono i seguenti")
+print("\nI tuoi corsi disponibili sono i seguenti:")
 sleep(0.5)
 print('\n'.join(corsi_disponibili))
 sleep(2)
 
 corsi_desiderati = [corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7]
+print("\nHai specificato di voler seguire " + quanti_corsi + " corsi.\nLi cercherò come specificato nelle impostazioni.\n")
 for i in range(1, quanti_corsi):
 	corso = corsi_desiderati[i].upper() # seleziono il corso
 	savefile_path = percorso + '_' + str(i) + '.txt' # costruisco il percorso al file di salvataggio
+	l.info("File path is: " + savefile_path)
 
 	# Click della pagina del corso che si vuole controllare
 	print("Mi dirigo verso:" + corso)
@@ -111,17 +123,17 @@ for i in range(1, quanti_corsi):
 			print("Dati corrispondenti --> niente di nuovo su beep.")
 
 	else: # è la prima volta che runniamo il programma
-		print("Non è stata trovata una pre-esistente lista di documenti su beep")
+		print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
 
 	print("\nSalvo lista documenti...")
 	with open(savefile_path, 'wb') as file:
 		pickle.dump(lista, file) # salva i dati su file
-	print("fatto!\nAl prossimo corso!\n")
+	print("Fatto! Al prossimo corso!\n")
 	sleep(2)
 
 	browser.back()
 
-print("\n\nFinito! Ciao!\n")
+print("\n\nFinito! Buono Studio!\n")
 
 
 sleep(3)
