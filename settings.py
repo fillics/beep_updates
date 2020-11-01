@@ -1,5 +1,5 @@
 ## Impostazioni Beep ##
-codice_utente = your_codice_utente
+codice_utente = 12345678 # il tuo codice persona
 password_utente = 'your_password'
 
 anno_accademico = "'2020-21'" # [UNUSED!]
