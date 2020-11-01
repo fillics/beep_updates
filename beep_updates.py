@@ -103,7 +103,14 @@ sleep(0.5)
 print('\n'.join(corsi_disponibili))
 sleep(2)
 
-corsi_desiderati = [corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7]
+corsi_desiderati = []
+
+if headless == 'true':
+	for i in range(0, quanti_corsi):
+		corsi_desiderati.append(os.environ.get('CORSO_SCELTO_'+str(i)))
+else:
+	corsi_desiderati = [corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7]
+
 print("\nHai specificato di voler seguire " + str(quanti_corsi) + " corsi.\nLi cercherò come specificato nelle impostazioni.\n")
 for i in range(0, quanti_corsi):
 	corso = corsi_desiderati[i].upper() # seleziono il corso
