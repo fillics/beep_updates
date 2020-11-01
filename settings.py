@@ -23,6 +23,7 @@ notif_email = 'false'
 
 ## Impostazioni Progamma ##
 pi_mode = 'false'
+headless = 'true'
 percorso = 'data/listaDocumenti'
 
 

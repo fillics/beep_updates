@@ -5,7 +5,7 @@ import logging as l
 l.info("\nImporting...")
 from time import sleep
 import os, time, smtplib, os.path, pickle
-from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, anno_accademico, percorso, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
+from settings import pi_mode, notif_push, notif_email, headless, anno_accademico, percorso, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
 
 # Import dei browser
 if pi_mode == 'true':
@@ -30,6 +30,21 @@ if notif_email == 'true':
 	from email.mime.base import MIMEBase
 	from email import encoders
 l.info("Done importing!\n")
+
+# Browser Setup specifico per applicazioni headless
+if headless == 'true' and pi_mode != 'true':
+	print("Headless mode detected!")
+
+	# Recupero variabili d'ambiente
+	l.info("getting environment variables...")
+	chrome_bin = os.environ.get('CHROME_BIN')
+	chromedriver_bin = os.environ.get('CHROMEDRIVER_PATH')
+	codice_utente = int(os.environ.get("BEEP_CODICE_UTENTE"))
+	password_utente = os.environ.get("BEEP_PASSWORD")
+	print("Got variables:\n  - CHROME_BIN = " + chrome_bin + "\n  - CHROMEDRIVER_PATH = " + chromedriver_bin + "\n  - BEEP_CODICE_UTENTE = " + str(codice_utente) + "\n  - BEEP_PASSWORD: _mica te la scrivo, scemo!_" + "\n\n")
+
+else:
+	from settings import codice_utente, password_utente
 
 
 # Apertura Browser
