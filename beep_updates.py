@@ -43,13 +43,27 @@ if headless == 'true' and pi_mode != 'true':
 	password_utente = os.environ.get("BEEP_PASSWORD")
 	print("Got variables:\n  - CHROME_BIN = " + chrome_bin + "\n  - CHROMEDRIVER_PATH = " + chromedriver_bin + "\n  - BEEP_CODICE_UTENTE = " + str(codice_utente) + "\n  - BEEP_PASSWORD: _mica te la scrivo, scemo!_" + "\n\n")
 
+	# Configurazione del webdriver
+	l.info("Configuring Chrome...")
+	from selenium import webdriver
+	chrome_options = webdriver.ChromeOptions()
+	chrome_options.binary_location = chrome_bin
+	chrome_options.add_argument("--headless")
+	chrome_options.add_argument("--disable-dev-shm-usage")
+	chrome_options.add_argument("--no-sandbox")
+
 else:
 	from settings import codice_utente, password_utente
 
 
 # Apertura Browser
+print("Let's go!\n")
 l.info("\nOpening browser...")
-browser = webdriver.Firefox() if pi_mode == 'true' else Chrome()
+if headless == 'true' and pi_mode != 'true':
+	browser = webdriver.Chrome(executable_path=chromedriver_bin, chrome_options=chrome_options)
+else:
+	browser = webdriver.Firefox() if pi_mode == 'true' else Chrome()
+
 url = 'https://beep.metid.polimi.it/'
 l.info("\nNavigating...")
 browser.get(url) # connessione a beep
