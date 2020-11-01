@@ -63,7 +63,7 @@ else:
 print("Let's go!\n")
 l.info("\nOpening browser...")
 if headless == 'true' and pi_mode != 'true':
-	browser = webdriver.Chrome(executable_path=chromedriver_bin, chrome_options=chrome_options)
+	browser = webdriver.Chrome(executable_path=chromedriver_bin, options=chrome_options)
 else:
 	browser = webdriver.Firefox() if pi_mode == 'true' else Chrome()
 
