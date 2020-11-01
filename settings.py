@@ -27,6 +27,11 @@ headless = 'true'
 percorso = 'data/listaDocumenti'
 
 
+
+## Impostazioni notify.run per notifiche WebPush ##
+notify_channel = 'codice canale'
+
+
 ## Impostazioni  Email ##
 # Mittente
 email_user = 'email_dalla_quale_ricevere_comunicazioni'

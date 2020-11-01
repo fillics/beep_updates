@@ -20,7 +20,10 @@ else:
 if notif_push == 'true':
 	l.info("push notifs ON")
 	from notify_run import Notify
-	notify = Notify()
+	from settings import notify_channel
+	notify_endpoint = "https://notify.run/" + notify_channel
+	print("Notifiche WebPush attivate presso: " + notify_endpoint)
+	notify = Notify(endpoint=notify_endpoint)
 
 if notif_email == 'true':
 	l.info("email notifs ON")
