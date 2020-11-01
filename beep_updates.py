@@ -7,6 +7,7 @@ from time import sleep
 import os, time, smtplib, os.path, pickle
 from settings import pi_mode, notif_push, notif_email, codice_utente, password_utente, anno_accademico, percorso, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
 
+# Import dei browser
 if pi_mode == 'true':
 	l.info("pi mode is ON")
 	from selenium import webdriver
@@ -15,8 +16,7 @@ else:
 	l.info("pi mode is OFF")
 	from selenium.webdriver import Chrome
 
-
-
+# Import Utilità di Notifiche
 if notif_push == 'true':
 	l.info("push notifs ON")
 	from notify_run import Notify
