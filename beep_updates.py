@@ -148,7 +148,7 @@ for i in range(0, quanti_corsi):
 
 	browser.back()
 
-print("\n\nFinito! Buono Studio!\n")
+print("\n\nFinito! Buono Studio!\n\n\nSaluti al Magnifico Ferruccio!")
 
 
 sleep(3)
