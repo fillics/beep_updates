@@ -104,14 +104,16 @@ print('\n'.join(corsi_disponibili))
 sleep(2)
 
 corsi_desiderati = []
+print("\nHai specificato di voler seguire " + str(quanti_corsi) + " corsi.\nLi cercherò come specificato nelle impostazioni.\n")
 
-if headless == 'true':
-	for i in range(0, quanti_corsi):
+# costruisco la lista dei nomi dei corsi
+if headless == 'true': # se siamo headless, cercali nelle variabili d'ambiente
+	for i in range(1, quanti_corsi+1):
 		corsi_desiderati.append(os.environ.get('CORSO_SCELTO_'+str(i)))
-else:
+else: # altrimenti, prendili dal file di Configurazione
 	corsi_desiderati = [corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7]
 
-print("\nHai specificato di voler seguire " + str(quanti_corsi) + " corsi.\nLi cercherò come specificato nelle impostazioni.\n")
+
 for i in range(0, quanti_corsi):
 	corso = corsi_desiderati[i].upper() # seleziono il corso
 	savefile_path = percorso + '_' + str(i) + '.txt' # costruisco il percorso al file di salvataggio
