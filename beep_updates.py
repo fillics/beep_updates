@@ -44,7 +44,9 @@ if headless == 'true' and pi_mode != 'true':
 	chromedriver_bin = os.environ.get('CHROMEDRIVER_PATH')
 	codice_utente = int(os.environ.get("BEEP_CODICE_UTENTE"))
 	password_utente = os.environ.get("BEEP_PASSWORD")
-	print("Got variables:\n  - CHROME_BIN = " + chrome_bin + "\n  - CHROMEDRIVER_PATH = " + chromedriver_bin + "\n  - BEEP_CODICE_UTENTE = " + str(codice_utente) + "\n  - BEEP_PASSWORD: _mica te la scrivo, scemo!_" + "\n\n")
+	http_get_endpoint = os.environ.get("HTTP_GET_ENDPOINT")
+	http_post_endpoint = os.environ.get("HTTP_POST_ENDPOINT")
+	print("Got variables:\n  - CHROME_BIN = " + chrome_bin + "\n  - CHROMEDRIVER_PATH = " + chromedriver_bin + "\n  - BEEP_CODICE_UTENTE = " + str(codice_utente) + "\n  - BEEP_PASSWORD: _mica te la scrivo, scemo!_" + "\n  - HTTP_GET_ENDPOINT: " + http_get_endpoint + "\n  - HTTP_POST_ENDPOINT: " + http_post_endpoint + "\n\n")
 
 	# Configurazione del webdriver
 	l.info("Configuring Chrome...")
