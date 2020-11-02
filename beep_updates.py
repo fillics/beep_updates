@@ -1,11 +1,12 @@
 print("-o-o-o-o- Beep Updates -o-o-o-o-o-")
 
-import logging as l
 
+## _-_-_-_ IMPORTS _-_-_-_
+import logging as l
 l.info("\nImporting...")
 from time import sleep
 import os, time, smtplib, os.path, pickle
-from settings import pi_mode, notif_push, notif_email, headless, anno_accademico, percorso, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
+from settings import pi_mode, notif_push, notif_email, headless, anno_accademico, percorso, base_filename, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
 
 # Import dei browser
 if pi_mode == 'true':
@@ -34,7 +35,7 @@ if notif_email == 'true':
 	from email import encoders
 l.info("Done importing!\n")
 
-# Browser Setup specifico per applicazioni headless
+## _-_-_-_ BROWSER SETUP and ENV VARS _-_-_-_
 if headless == 'true' and pi_mode != 'true':
 	print("Headless mode detected!")
 
@@ -59,6 +60,32 @@ if headless == 'true' and pi_mode != 'true':
 
 else:
 	from settings import codice_utente, password_utente
+
+
+
+## _-_-_-_ FUNCTIONS DEFINITIONS _-_-_-_
+def send_email_notif(link, corso):
+	print("Invio email...")
+	subject = 'Nuovo file caricato su '+corso
+	msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
+	msg['From'] = email_user
+	msg['To'] = email_send
+	msg['subject'] = subject
+	server = smtplib.SMTP('smtp.gmail.com:587')
+	server.starttls()
+	server.ehlo()
+	server.login(email_user, email_pass)
+	server.sendmail(email_user, email_send, msg.as_string())
+	server.quit()
+
+def send_webpush_notif(link, listaDocumenti):
+	print("Invio notifica push...")
+	notify.send('Nuovo file caricato su Beep: '+str(listaDocumenti[0]), link)
+
+def send_notifs(link, corso, listaDocumenti):
+	if notif_push == 'true': send_webpush_notif(link, listaDocumenti)
+	if notif_email == 'true': send_email_notif(link, corso)
+
 
 
 # Apertura Browser
@@ -118,7 +145,10 @@ else: # altrimenti, prendili dal file di Configurazione
 
 for i in range(0, quanti_corsi):
 	corso = corsi_desiderati[i].upper() # seleziono il corso
-	savefile_path = percorso + '_' + str(i) + '.txt' # costruisco il percorso al file di salvataggio
+
+	# costruisco il percorso al file di salvataggio
+	savefile_path_base = percorso + base_filename if headless != 'true' else http_get_endpoint + base_filename
+	savefile_path = savefile_path_base + '_' + str(i) + '.txt'
 	l.info("File path is: " + savefile_path)
 
 	# Click della pagina del corso che si vuole controllare
@@ -143,25 +173,8 @@ for i in range(0, quanti_corsi):
 
 			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-			# Invia notifica WebPush
-			if notif_push == 'true':
-				print("Invio notifica push...")
-				notify.send('Nuovo file caricato su Beep: '+str(lista[0]), link)
-
-			#Invia notifica Email
-			if notif_email == 'true':
-				print("Invio email...")
-				msg = MIMEText("Ciao, e' appena stato caricato su Beep un file. Il link per scaricarlo e' il seguente: ", link)
-				msg['From'] = email_user
-				msg['To'] = email_send
-				msg['subject'] = subject
-				subject = 'Nuovo file caricato su '+corso
-				server = smtplib.SMTP('smtp.gmail.com:587')
-				server.starttls()
-				server.ehlo()
-				server.login(email_user, email_pass)
-				server.sendmail(email_user, email_send, msg.as_string())
-				server.quit()
+			# Invia Notifiche
+			send_notifs(link, corso, lista)
 
 		else: # non ci sono stati cambiamenti su beep
 			print("Dati corrispondenti --> niente di nuovo su beep.")
