@@ -86,6 +86,31 @@ def send_notifs(link, corso, listaDocumenti):
 	if notif_push == 'true': send_webpush_notif(link, listaDocumenti)
 	if notif_email == 'true': send_email_notif(link, corso)
 
+def connect_to_beep(browser):
+	url = 'https://beep.metid.polimi.it/'
+	l.info("\nNavigating...")
+	browser.get(url) # connessione a beep
+	if pi_mode == 'true': browser.minimize_window() # iconizzare il browser
+	sleep(2)
+
+def do_beep_login(browser):
+	# Click del pulsante Login
+	button = browser.find_element_by_xpath("//a[contains(text(), 'Login')]")
+	button.click()
+	sleep(2)
+
+	# Riempimento con le credenziali
+	print("\nEseguo il login...")
+	login_field = browser.find_element_by_xpath("//input[@name=\"login\"]").send_keys(codice_utente)
+	pw_field = browser.find_element_by_xpath("//input[@name=\"password\"]").send_keys(password_utente)
+	sleep(2)
+
+	# Click del pulsante di Login
+	button = browser.find_element_by_xpath("//button[@name=\"evn_conferma\"]")
+	button.click()
+	sleep(3)
+
+
 
 
 # Apertura Browser
@@ -96,27 +121,9 @@ if headless == 'true' and pi_mode != 'true':
 else:
 	browser = webdriver.Firefox() if pi_mode == 'true' else Chrome()
 
-url = 'https://beep.metid.polimi.it/'
-l.info("\nNavigating...")
-browser.get(url) # connessione a beep
-if pi_mode == 'true': browser.minimize_window() # iconizzare il browser
-sleep(2)
-
-# Click del pulsante Login
-button = browser.find_element_by_xpath("//a[contains(text(), 'Login')]")
-button.click()
-sleep(2)
-
-# Riempimento con le credenziali
-print("\nEseguo il login...")
-login_field = browser.find_element_by_xpath("//input[@name=\"login\"]").send_keys(codice_utente)
-pw_field = browser.find_element_by_xpath("//input[@name=\"password\"]").send_keys(password_utente)
-sleep(2)
-
-# Click del pulsante di Login
-button = browser.find_element_by_xpath("//button[@name=\"evn_conferma\"]")
-button.click()
-sleep(3)
+# Connessione a BeeP e login
+connect_to_beep(browser)
+do_beep_login(browser)
 
 # Chiedere quale corso seguire
 corsi_disponibili = []
