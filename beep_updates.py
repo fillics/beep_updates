@@ -6,6 +6,7 @@ import logging as l
 l.info("\nImporting...")
 from time import sleep
 import os, time, smtplib, os.path, pickle
+if headless == 'true': import requests
 from settings import pi_mode, notif_push, notif_email, headless, anno_accademico, percorso, base_filename, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
 
 # Import dei browser
@@ -169,25 +170,38 @@ for i in range(0, quanti_corsi):
 	for a in documenti:
 		lista.append(a.text) # inserisci i documenti nella lista
 
-	if os.path.isfile(savefile_path): # se esiste già un file coi dati
-		with open(savefile_path, 'rb') as file:
-			vecchi_dati = pickle.load(file) # recupera i dati
+		# Recupero vecchia lista documenti
+		gotfile = False
+		if headless != 'true':
+			if os.path.isfile(savefile_path):
+				l.info("Loading from local")
+				with open(savefile_path, 'rb') as file: #apri il file
+					vecchi_dati = pickle.load(file) # recupera i dati
+					gotfile = True
+			else: # è la prima volta che runniamo il programma
+				print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
+				gotfile = False
+		else: # siamo headless
+			l.info("Loading from remote")
+			r = requests.get(savefile_path)
+			vecchi_dati = pickle.load(r.content)
+			gotfile = True
 
-		if lista != vecchi_dati : # ci sono stati cambiamenti su beep
-			print("Dati difformi!\n")
-			print("Il nuovo file e': ")
-			print(''.join(lista[0]))
+		# Confrontiamo liste documenti, se l'abbiamo trovata
+		if gotfile:
+			if lista != vecchi_dati : # ci sono stati cambiamenti su beep
+				print("Dati difformi!\n")
+				print("Il nuovo file e': ")
+				print(''.join(lista[0]))
 
-			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+				link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-			# Invia Notifiche
-			send_notifs(link, corso, lista)
+				# Invia Notifiche
+				send_notifs(link, corso, lista)
 
-		else: # non ci sono stati cambiamenti su beep
-			print("Dati corrispondenti --> niente di nuovo su beep.")
+			else: # non ci sono stati cambiamenti su beep
+				print("Dati corrispondenti --> niente di nuovo su beep.")
 
-	else: # è la prima volta che runniamo il programma
-		print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
 
 	print("Salvo lista documenti...")
 	with open(savefile_path, 'wb') as file:
