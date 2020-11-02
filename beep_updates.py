@@ -139,11 +139,12 @@ for i in range(0, quanti_corsi):
 			print("Il nuovo file e': ")
 			print(''.join(lista[0]))
 
+			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+
 			# Invia notifica WebPush
 			if notif_push == 'true':
 				print("Invio notifica push...")
-				notify.send('Nuovo file caricato su Beep: ', lista[0])
-				link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+				notify.send('Nuovo file caricato su Beep: '+str(lista[0]), link)
 
 			#Invia notifica Email
 			if notif_email == 'true':
