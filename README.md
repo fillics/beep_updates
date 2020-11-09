@@ -1,8 +1,8 @@
 # Beep Updates [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/)
 Rimani aggiornato sugli ultimi file caricati su Beep dei corsi che vuoi seguire.
 
-## Motivo
 Quante volte vi è capitato di continuare ad *aggiornare* la pagina di Beep per controllare la pubblicazione di un file? E quante volte siete rimasti *delusi* dalla non pubblicazione del file degli esiti che state aspettando da giorni?
+
 Per rendere il tutto più automatico e senza perdite di tempo, abbiamo creato un bot che aggiorna in automatico la pagina dei corsi che vuoi controllare e ti avvisa se è stato caricato qualcosa.
 
 ## Che cos'è
@@ -27,6 +27,7 @@ Lo script ammette due modalità di funzionamento:
 ### Modalità Headless
 1. Impostare le preferenze della prima sezione in `settings.py`
 2. Impostare le variabili d'ambiente necessarie: `export NOME_VARIABILE=valore`
+
 Variabile | Significato
 --------- | -----------
 BEEP_CODICE_UTENTE | Codice Persona per l'accesso a BeeP
@@ -39,11 +40,14 @@ CORSO_SCELTO_1 | Nome del primo corso che si intende seguire
 CORSO_SCELTO_2 | Nome del secondo corso che si intende seguire
 ... | ...
 CORSO_SCELTO_n | Nome dell'n-esimo corso che si intende seguire
+
 3. Avviare lo script con: `python3 beep_updates.py`
 4. _(opzionale)_ Automatizzare l'avvio periodico del programma, ad esempio con un cronjob appropriato
 
 
 ## Caricamento di File Remoti
 In modalità headless, lo script proverà a caricare i file di salvataggio inviando richieste http `POST` al link specificato nella variabile d'ambiente `HTTP_POST_ENDPOINT`.
+
 In particolare, il programma invia dati di tipo `multipart/form-data`: è necessario che l'endpoint accetti questo tipo di richieste, e si aspetti un file al parametro `fileToUpload`.
+
 Un esempio di un simile script è disponibile nella cartella `esempi`.
