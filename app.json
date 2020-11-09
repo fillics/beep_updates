@@ -1,0 +1,44 @@
+{
+  "name": "BeeP Updates",
+  "description": "Script automatizzato per ricevere notifiche sul caricamento di file su BeeP",
+
+  "buildpacks": [
+    {"url": "https://github.com/heroku/heroku-buildpack-google-chrome"}
+    {"url": "https://github.com/heroku/heroku-buildpack-chromedriver"}
+    {"url": "heroku/python"}
+  ],
+
+  "env": {
+    "BEEP_CODICE_UTENTE": {
+      "description": "Codice Persona per l'accesso a BeeP",
+      "required": true
+    },
+    "BEEP_PASSWORD": {
+      "description": "Password di BeeP",
+      "required": true
+    },
+    "CHROME_BIN": {
+      "value": "/app/.apt/usr/bin/google-chrome"
+    },
+    "CHROMEDRIVER_PATH": {
+      "value": "/app/.chromedriver/bin/chromedriver"
+    },
+    "HTTP_GET_ENDPOINT": {
+      "description": "URL della cartella remota che ospita i file di salvataggio",
+      "required": true
+    },
+    "HTTP_POST_ENDPOINT": {
+      "description": "URL allo script remoto che accetta richieste POST per salvare i file prodotti dallo script",
+      "required": true
+    },
+    "CORSO_SCELTO_1": {
+      "description": "Nome del primo corso che si intende seguire",
+      "required": true
+    },
+    "CORSO_SCELTO_n": {
+      "description": "Nome dell'n-esimo corso che si intende seguire",
+      "required": false
+    }
+  }
+
+}

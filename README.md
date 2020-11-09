@@ -51,3 +51,13 @@ In modalità headless, lo script proverà a caricare i file di salvataggio invia
 In particolare, il programma invia dati di tipo `multipart/form-data`: è necessario che l'endpoint accetti questo tipo di richieste, e si aspetti un file al parametro `fileToUpload`.
 
 Un [esempio di un simile script](esempi/upload.php) è disponibile nella cartella `esempi`.
+
+
+## Deployment su Heroku [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+Per caricare lo script su [Heroku](https://heroku.com), è necessario attivare i buildpack:
+- heroku/python
+- https://github.com/heroku/heroku-buildpack-google-chrome
+- https://github.com/heroku/heroku-buildpack-chromedriver
+e seguire poi le istruzioni per la [modalità headless](#modalità-headless).
+
+Per generare automaticamente un progetto basato sul template standard, è pussibile sfruttare il bottone qui sopra.
