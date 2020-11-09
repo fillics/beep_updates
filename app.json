@@ -35,8 +35,16 @@
       "description": "Nome del primo corso che si intende seguire",
       "required": true
     },
-    "CORSO_SCELTO_n": {
-      "description": "Nome dell'n-esimo corso che si intende seguire",
+    "CORSO_SCELTO_2": {
+      "description": "Nome del secondo corso che si intende seguire",
+      "required": false
+    },
+    "CORSO_SCELTO_3": {
+      "description": "Nome del terzo corso che si intende seguire",
+      "required": false
+    },
+    "CORSO_SCELTO_4": {
+      "description": "Nome del quarto corso che si intende seguire",
       "required": false
     }
   }
