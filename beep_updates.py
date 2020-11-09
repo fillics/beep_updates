@@ -156,9 +156,11 @@ for i in range(0, quanti_corsi):
 	corso = corsi_desiderati[i].upper() # seleziono il corso
 
 	# costruisco il percorso al file di salvataggio
-	savefile_path_base = percorso + base_filename if headless != 'true' else http_get_endpoint + base_filename
-	savefile_path = savefile_path_base + '_' + str(i) + '.txt'
-	l.info("File path is: " + savefile_path)
+	filename = base_filename + '_' + str(i+1) + '.txt'
+	savefile_path_local = percorso + filename
+	savefile_path_remote = http_get_endpoint + filename
+
+	l.info("Local file path is: " + savefile_path_local + ".\nRemote file path is: " + savefile_path_remote)
 
 	# Click della pagina del corso che si vuole controllare
 	print("Mi dirigo verso:" + corso)
@@ -174,9 +176,9 @@ for i in range(0, quanti_corsi):
 	# Recupero vecchia lista documenti
 	gotfile = False
 	if headless != 'true':
-		if os.path.isfile(savefile_path):
+		if os.path.isfile(savefile_path_local):
 			l.info("Loading from local")
-			with open(savefile_path, 'rb') as file: #apri il file
+			with open(savefile_path_local, 'rb') as file: #apri il file
 				vecchi_dati = pickle.load(file) # recupera i dati
 				gotfile = True
 		else: # è la prima volta che runniamo il programma
@@ -184,13 +186,16 @@ for i in range(0, quanti_corsi):
 			gotfile = False
 	else: # siamo headless
 		l.info("Loading from remote")
-		r = requests.get(savefile_path)
-		with open('fil.pkl', 'wb') as f:
-			f.write(r.content)
-			f.truncate()
-		with open('fil.pkl', 'rb') as f:
-			vecchi_dati = pickle.load(f)
+		r = requests.get(savefile_path_remote) # prova a recuperare il file remoto
+		if r.status_code == 200: # se abbiamo ottenuto un file
+			with open('fil.pkl', 'wb') as f: # scriviamo i dati su un file locale temporaneo
+				f.write(r.content)
+				f.truncate()
+			with open('fil.pkl', 'rb') as f: # riapro quel file e ne carico i dati
+				vecchi_dati = pickle.load(f)
 			gotfile = True
+		else:
+			gotfile = False
 
 	# Confrontiamo liste documenti, se l'abbiamo trovata
 	if gotfile:
@@ -209,12 +214,18 @@ for i in range(0, quanti_corsi):
 
 
 	print("Salvo lista documenti...")
-	with open(savefile_path, 'wb') as file:
+	with open(savefile_path_local, 'wb') as file:
 		pickle.dump(lista, file) # salva i dati su file
+		l.info("Lista documenti salvata in Locale.")
+	if headless == 'true':
+		print("Carico online la lista aggiornata...")
+		dati = { 'fileToUpload': (filename, open(savefile_path_local, 'rb'))}
+		pReq = requests.post(http_post_endpoint, files=dati)
+		pReq.raise_for_status() # quitta in errore se abbiamo ricevuto una risposta HTTP diversa dal 200
 	print("Fatto! Al prossimo corso!\n")
-	sleep(2)
 
 	browser.back()
+	sleep(2)
 
 print("\n\nFinito! Buono Studio!\n\n\nSaluti al Magnifico Ferruccio!")
 
