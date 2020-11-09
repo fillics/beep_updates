@@ -1,44 +1,49 @@
-# Beep Updates
+# Beep Updates [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/)
 Rimani aggiornato sugli ultimi file caricati su Beep dei corsi che vuoi seguire.
 
 ## Motivo
 Quante volte vi è capitato di continuare ad *aggiornare* la pagina di Beep per controllare la pubblicazione di un file? E quante volte siete rimasti *delusi* dalla non pubblicazione del file degli esiti che state aspettando da giorni?
-Per rendere il tutto più automatico e senza perdite di tempo, ho creato un bot che aggiorna in automatico la pagina del corso che vuoi controllare e ti avvisa se è stato caricato qualcosa. 
+Per rendere il tutto più automatico e senza perdite di tempo, abbiamo creato un bot che aggiorna in automatico la pagina dei corsi che vuoi controllare e ti avvisa se è stato caricato qualcosa.
 
 ## Che cos'è
-È un semplice bot che si logga nel sito di Beep e ti chiede a quale dei corsi, alla quale siamo iscritti, sei interessato a ricevere aggiornamenti sul caricamento di file. Se è stato caricato qualcosa nella pagina del corso che hai deciso di seguire, il bot ti avvisa:
+È un semplice bot che si logga nel sito di Beep e ti chiede a quali corsi sei interessato a ricevere aggiornamenti sul caricamento di file. Se è stato caricato qualcosa nella pagina del corso che hai deciso di seguire, il bot ti avvisa:
 - con un'email all'indirizzo che vuoi, sfruttando il protocollo [SMTP](https://docs.python.org/3/library/smtplib.html#module-smtplib)
-- con una notifica direttamente sul cellulare, usando [notify.run](https://notify.run/)
+- con una notifica WebPush direttamente sul cellulare, usando [notify.run](https://notify.run/)
 
 
 ## Come funziona
-Per programmare questo bot, ho usato **Python** e **Selenium**, un tool per l'automazione di pagine Web capace di simulare le attività di un utente. 
-Per prima cosa, si devono inserire le proprie credenziali di accesso nel file [secrets.py](secrets.py), sia quelle di Beep sia quelle dell'email. (*le credenziali inserite sono e rimarranno private, non vengono in alcun modo condivise con altre persone*)
+Per programmare questo bot, abbiamo usato **Python** e **Selenium**, un tool per l'automazione di pagine Web capace di simulare le attività di un utente.
 
-Successivamente, lanciando il file [beep_updates.py](beep_updates.py) *(consiglio di usare **Linux** o un **Raspberry**, che può rimanere sempre accesso senza troppi problemi, usando il file [raspberry.py](raspberry.py))*, il bot si collegherà direttamente alla pagina Beep inserendo in automatico le credenziali, per poi chiedere quale corso controllare, inserendo il nome del prof o il nome della materia.
+Lo script ammette due modalità di funzionamento:
+- **headless**: le impostazioni vengono recuperate principalmente da variabili d'ambiente della shell da cui viene lanciato lo script, i dati relativi ai file di BeeP vengono letti/scritti su files remoti, e non viene visualizzato graficamente il browser: avviene tutto in riga di comando
+- **standard**: le impostazioni vengono recuperate interamente dal file di configurazione `settings.py`, i dati relativi ai file di BeeP vengono salvati su files locali, ed è possibile vedere il browser animarsi di vita propria
 
-```
-testo = input("Quale corso vuoi tenere sotto controllo? ")
-```
 
-Si può impostare ogni quanto fargli aggiornare la pagina, modificando l'apposita opzione nel file `settings.py`
+### Modalità Standard
+1. Impostare le proprie preferenze e dati di login nel file `settings.py`
+2. Avviare lo script con: `python3 beep_updates.py`
+3. _(opzionale)_ Automatizzare l'avvio periodico del programma, ad esempio con un cronjob appropriato
 
-Ogni x secondi, la pagina viene aggiornata e controlla se sono stati caricati nuovi file. Se è presente un nuovo file, il bot manda un'**email** con il nome del file aggiunto e il link per scaricarlo, oppure una **notifica** con il comando: ```notify.send('Nuovo file caricato su Beep')```. (*per ricevere la notifica, si dovranno eseguire due istruzioni molto facili e veloci, trovabili sul sito [notify.run](https://notify.run/), e brevemente descritte di seguito*)
+### Modalità Headless
+1. Impostare le preferenze della prima sezione in `settings.py`
+2. Impostare le variabili d'ambiente necessarie: `export NOME_VARIABILE=valore`
+Variabile | Significato
+--------- | -----------
+BEEP_CODICE_UTENTE | Codice Persona per l'accesso a BeeP
+BEEP_PASSWORD | Password di Beep
+CHROME_BIN | Percorso all'eseguibile di Google Chrome, che viene usato come browser
+CHROMEDRIVER_PATH | Percorso all'eseguibile di `chromedriver`
+HTTP_GET_ENDPOINT | URL della cartella remota che ospita (/ospiterà) i file di salvataggio
+HTTP_POST_ENDPOINT | URL allo script remoto che accetta [richieste POST](#caricamento-di-file-remoti) per salvare i file prodotti dallo script
+CORSO_SCELTO_1 | Nome del primo corso che si intende seguire
+CORSO_SCELTO_2 | Nome del secondo corso che si intende seguire
+... | ...
+CORSO_SCELTO_n | Nome dell'n-esimo corso che si intende seguire
+3. Avviare lo script con: `python3 beep_updates.py`
+4. _(opzionale)_ Automatizzare l'avvio periodico del programma, ad esempio con un cronjob appropriato
 
-## Setup di Notify.run
-Installare Notify.run:
-```
-pip3 install notify-run
-```
-Attivare un nuovo canale:
-```
-notify-run register
-```
 
-Alternativamente, per indirizzare le notifiche a un canale già esistente:
-<pre>
-  notify-run configure https://notify.run/<b>[codice canale]</b>
-</pre>
-
-## Note
-Funziona con Python 3
+## Caricamento di File Remoti
+In modalità headless, lo script proverà a caricare i file di salvataggio inviando richieste http `POST` al link specificato nella variabile d'ambiente `HTTP_POST_ENDPOINT`.
+In particolare, il programma invia dati di tipo `multipart/form-data`: è necessario che l'endpoint accetti questo tipo di richieste, e si aspetti un file al parametro `fileToUpload`.
+Un esempio di un simile script è disponibile nella cartella `esempi`.
