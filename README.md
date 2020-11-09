@@ -58,6 +58,7 @@ Per caricare lo script su [Heroku](https://heroku.com), è necessario attivare i
 - heroku/python
 - https://github.com/heroku/heroku-buildpack-google-chrome
 - https://github.com/heroku/heroku-buildpack-chromedriver
+
 e seguire poi le istruzioni per la [modalità headless](#modalità-headless).
 
-Per generare automaticamente un progetto basato sul template standard, è pussibile sfruttare il bottone qui sopra.
+Per generare automaticamente un progetto basato sul template standard, è possibile sfruttare il bottone qui sopra.
