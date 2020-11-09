@@ -50,4 +50,4 @@ In modalità headless, lo script proverà a caricare i file di salvataggio invia
 
 In particolare, il programma invia dati di tipo `multipart/form-data`: è necessario che l'endpoint accetti questo tipo di richieste, e si aspetti un file al parametro `fileToUpload`.
 
-Un esempio di un simile script è disponibile nella cartella `esempi`.
+Un [esempio di un simile script](esempi/upload.php) è disponibile nella cartella `esempi`.
