@@ -6,8 +6,9 @@ import logging as l
 l.info("\nImporting...")
 from time import sleep
 import os, time, smtplib, os.path, pickle
-if headless == 'true': import requests
 from settings import pi_mode, notif_push, notif_email, headless, anno_accademico, percorso, base_filename, quanti_corsi, corso_scelto_1, corso_scelto_2, corso_scelto_3, corso_scelto_4, corso_scelto_5, corso_scelto_6, corso_scelto_7
+if headless == 'true': import requests
+
 
 # Import dei browser
 if pi_mode == 'true':
