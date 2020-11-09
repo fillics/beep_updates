@@ -171,37 +171,41 @@ for i in range(0, quanti_corsi):
 	for a in documenti:
 		lista.append(a.text) # inserisci i documenti nella lista
 
-		# Recupero vecchia lista documenti
-		gotfile = False
-		if headless != 'true':
-			if os.path.isfile(savefile_path):
-				l.info("Loading from local")
-				with open(savefile_path, 'rb') as file: #apri il file
-					vecchi_dati = pickle.load(file) # recupera i dati
-					gotfile = True
-			else: # è la prima volta che runniamo il programma
-				print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
-				gotfile = False
-		else: # siamo headless
-			l.info("Loading from remote")
-			r = requests.get(savefile_path)
-			vecchi_dati = pickle.load(r.content)
+	# Recupero vecchia lista documenti
+	gotfile = False
+	if headless != 'true':
+		if os.path.isfile(savefile_path):
+			l.info("Loading from local")
+			with open(savefile_path, 'rb') as file: #apri il file
+				vecchi_dati = pickle.load(file) # recupera i dati
+				gotfile = True
+		else: # è la prima volta che runniamo il programma
+			print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
+			gotfile = False
+	else: # siamo headless
+		l.info("Loading from remote")
+		r = requests.get(savefile_path)
+		with open('fil.pkl', 'wb') as f:
+			f.write(r.content)
+			f.truncate()
+		with open('fil.pkl', 'rb') as f:
+			vecchi_dati = pickle.load(f)
 			gotfile = True
 
-		# Confrontiamo liste documenti, se l'abbiamo trovata
-		if gotfile:
-			if lista != vecchi_dati : # ci sono stati cambiamenti su beep
-				print("Dati difformi!\n")
-				print("Il nuovo file e': ")
-				print(''.join(lista[0]))
+	# Confrontiamo liste documenti, se l'abbiamo trovata
+	if gotfile:
+		if lista != vecchi_dati : # ci sono stati cambiamenti su beep
+			print("Dati difformi!\n")
+			print("Il nuovo file e': ")
+			print(''.join(lista[0]))
 
-				link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-				# Invia Notifiche
-				send_notifs(link, corso, lista)
+			# Invia Notifiche
+			send_notifs(link, corso, lista)
 
-			else: # non ci sono stati cambiamenti su beep
-				print("Dati corrispondenti --> niente di nuovo su beep.")
+		else: # non ci sono stati cambiamenti su beep
+			print("Dati corrispondenti --> niente di nuovo su beep.")
 
 
 	print("Salvo lista documenti...")
