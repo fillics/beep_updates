@@ -1,1 +1,1 @@
-web: python beep_updates.py
+web: flask run
