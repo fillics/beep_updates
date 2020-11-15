@@ -39,3 +39,7 @@ corso_scelto_7 = 'your_seventh_course_name' # se ne stai seguendo di più, sei u
 
 
 anno_accademico = "'2020-21'" # [UNUSED!]
+
+
+from dotenv import load_dotenv
+load_dotenv()
