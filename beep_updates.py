@@ -248,3 +248,7 @@ def beep_updates():
 	browser.close()
 
 	return "Controllo Eseguito!"
+
+
+if __name__ == '__main__':
+	app.run()

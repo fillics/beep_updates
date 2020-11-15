@@ -1,1 +1,1 @@
-web: flask run
+web: gunicorn beep_updates:app
