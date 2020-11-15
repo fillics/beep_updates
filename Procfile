@@ -1,1 +1,1 @@
-web: gunicorn beep_updates:app
+web: gunicorn --bind 0.0.0.0:${PORT} beep_updates:app
