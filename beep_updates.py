@@ -82,14 +82,6 @@ def get_corsi_desiderati(quanti_corsi): # -> corsi_desiderati
 
 
 
-
-
-
-
-
-print("-o-o-o-o- Beep Updates -o-o-o-o-o-")
-
-
 import logging as l
 l.info("\nImporting...")
 from time import sleep
@@ -152,95 +144,107 @@ else:
 	from settings import codice_utente, password_utente
 
 
+from flask import Flask
+app = Flask(__name__)
 
-# Inizializzazione browser
-browser = init_browser()
+@app.route('/')
+def show_info():
+	return "Navigare a '/check' per avviare controllare se sono stati caricati nuovi files su Beep"
 
-# Connessione a BeeP e login
-connect_to_beep(browser)
-do_beep_login(browser)
+@app.route('/check')
+def beep_updates():
 
-# Ottieni liste dei corsi
-corsi_disponibili = cerca_corsi(browser)
-corsi_desiderati = get_corsi_desiderati(quanti_corsi)
+	print("-o-o-o-o- Beep Updates -o-o-o-o-o-")
+	# Inizializzazione browser
+	browser = init_browser()
 
-# Verifiche updates
-for i in range(0, quanti_corsi):
-	corso = corsi_desiderati[i].upper() # seleziono il corso
+	# Connessione a BeeP e login
+	connect_to_beep(browser)
+	do_beep_login(browser)
 
-	# costruisco il percorso al file di salvataggio
-	filename = base_filename + '_' + str(i+1) + '.txt'
-	savefile_path_local = percorso + filename
-	savefile_path_remote = http_get_endpoint + filename
+	# Ottieni liste dei corsi
+	corsi_disponibili = cerca_corsi(browser)
+	corsi_desiderati = get_corsi_desiderati(quanti_corsi)
 
-	l.info("Local file path is: " + savefile_path_local + ".\nRemote file path is: " + savefile_path_remote)
+	# Verifiche updates
+	for i in range(0, quanti_corsi):
+		corso = corsi_desiderati[i].upper() # seleziono il corso
 
-	# Click della pagina del corso che si vuole controllare
-	print("Mi dirigo verso:" + corso)
-	button = browser.find_element_by_xpath("//*[contains(text(),'"+ corso +"')]")
-	button.click()
+		# costruisco il percorso al file di salvataggio
+		filename = base_filename + '_' + str(i+1) + '.txt'
+		savefile_path_local = percorso + filename
+		savefile_path_remote = http_get_endpoint + filename
 
-	# Verifica Novità
-	lista = []
-	documenti = browser.find_elements_by_xpath("//a[contains(@href, 'https://beep.metid.polimi.it/c/document_library/get_file?groupId=')]") # ottieni documenti
-	for a in documenti:
-		lista.append(a.text) # inserisci i documenti nella lista
+		l.info("Local file path is: " + savefile_path_local + ".\nRemote file path is: " + savefile_path_remote)
 
-	# Recupero vecchia lista documenti
-	gotfile = False
-	if headless != 'true':
-		if os.path.isfile(savefile_path_local):
-			l.info("Loading from local")
-			with open(savefile_path_local, 'rb') as file: #apri il file
-				vecchi_dati = pickle.load(file) # recupera i dati
+		# Click della pagina del corso che si vuole controllare
+		print("Mi dirigo verso:" + corso)
+		button = browser.find_element_by_xpath("//*[contains(text(),'"+ corso +"')]")
+		button.click()
+
+		# Verifica Novità
+		lista = []
+		documenti = browser.find_elements_by_xpath("//a[contains(@href, 'https://beep.metid.polimi.it/c/document_library/get_file?groupId=')]") # ottieni documenti
+		for a in documenti:
+			lista.append(a.text) # inserisci i documenti nella lista
+
+		# Recupero vecchia lista documenti
+		gotfile = False
+		if headless != 'true':
+			if os.path.isfile(savefile_path_local):
+				l.info("Loading from local")
+				with open(savefile_path_local, 'rb') as file: #apri il file
+					vecchi_dati = pickle.load(file) # recupera i dati
+					gotfile = True
+			else: # è la prima volta che runniamo il programma
+				print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
+				gotfile = False
+		else: # siamo headless
+			l.info("Loading from remote")
+			r = requests.get(savefile_path_remote) # prova a recuperare il file remoto
+			if r.status_code == 200: # se abbiamo ottenuto un file
+				with open('fil.pkl', 'wb') as f: # scriviamo i dati su un file locale temporaneo
+					f.write(r.content)
+					f.truncate()
+				with open('fil.pkl', 'rb') as f: # riapro quel file e ne carico i dati
+					vecchi_dati = pickle.load(f)
 				gotfile = True
-		else: # è la prima volta che runniamo il programma
-			print("Non è stata trovata una pre-esistente lista di documenti su beep: provvedo a generarne una.")
-			gotfile = False
-	else: # siamo headless
-		l.info("Loading from remote")
-		r = requests.get(savefile_path_remote) # prova a recuperare il file remoto
-		if r.status_code == 200: # se abbiamo ottenuto un file
-			with open('fil.pkl', 'wb') as f: # scriviamo i dati su un file locale temporaneo
-				f.write(r.content)
-				f.truncate()
-			with open('fil.pkl', 'rb') as f: # riapro quel file e ne carico i dati
-				vecchi_dati = pickle.load(f)
-			gotfile = True
-		else:
-			gotfile = False
+			else:
+				gotfile = False
 
-	# Confrontiamo liste documenti, se l'abbiamo trovata
-	if gotfile:
-		if lista != vecchi_dati : # ci sono stati cambiamenti su beep
-			print("Dati difformi!\n")
-			print("Il nuovo file e': ")
-			print(''.join(lista[0]))
+		# Confrontiamo liste documenti, se l'abbiamo trovata
+		if gotfile:
+			if lista != vecchi_dati : # ci sono stati cambiamenti su beep
+				print("Dati difformi!\n")
+				print("Il nuovo file e': ")
+				print(''.join(lista[0]))
 
-			link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
+				link = browser.find_element_by_link_text(lista[0]).get_attribute("href")
 
-			# Invia Notifiche
-			send_notifs(link, corso, lista)
+				# Invia Notifiche
+				send_notifs(link, corso, lista)
 
-		else: # non ci sono stati cambiamenti su beep
-			print("Dati corrispondenti --> niente di nuovo su beep.")
+			else: # non ci sono stati cambiamenti su beep
+				print("Dati corrispondenti --> niente di nuovo su beep.")
 
 
-	print("Salvo lista documenti...")
-	with open(savefile_path_local, 'wb') as file:
-		pickle.dump(lista, file) # salva i dati su file
-		l.info("Lista documenti salvata in Locale.")
-	if headless == 'true':
-		print("Carico online la lista aggiornata...")
-		dati = { 'fileToUpload': (filename, open(savefile_path_local, 'rb'))}
-		pReq = requests.post(http_post_endpoint, files=dati)
-		pReq.raise_for_status() # quitta in errore se abbiamo ricevuto una risposta HTTP diversa dal 200
-	print("Fatto! Al prossimo corso!\n")
+		print("Salvo lista documenti...")
+		with open(savefile_path_local, 'wb') as file:
+			pickle.dump(lista, file) # salva i dati su file
+			l.info("Lista documenti salvata in Locale.")
+		if headless == 'true':
+			print("Carico online la lista aggiornata...")
+			dati = { 'fileToUpload': (filename, open(savefile_path_local, 'rb'))}
+			pReq = requests.post(http_post_endpoint, files=dati)
+			pReq.raise_for_status() # quitta in errore se abbiamo ricevuto una risposta HTTP diversa dal 200
+		print("Fatto! Al prossimo corso!\n")
 
-	browser.back()
+		browser.back()
+		sleep(2)
+
+
+	print("\n\nFinito! Buono Studio!\n\n\nSaluti al Magnifico Ferruccio!")
 	sleep(2)
+	browser.close()
 
-
-print("\n\nFinito! Buono Studio!\n\n\nSaluti al Magnifico Ferruccio!")
-sleep(2)
-browser.close()
+	return "Controllo Eseguito!"
