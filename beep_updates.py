@@ -59,6 +59,21 @@ if headless == 'true' and pi_mode != 'true':
 	chrome_options.add_argument("--headless")
 	chrome_options.add_argument("--disable-dev-shm-usage")
 	chrome_options.add_argument("--no-sandbox")
+	chrome_options.add_argument('--headless')
+	chrome_options.add_argument('--disable-gpu')
+	chrome_options.add_argument('--window-size=1280x1696')
+	chrome_options.add_argument('--user-data-dir=/tmp/user-data')
+	chrome_options.add_argument('--hide-scrollbars')
+	chrome_options.add_argument('--enable-logging')
+	chrome_options.add_argument('--log-level=0')
+	chrome_options.add_argument('--v=99')
+	chrome_options.add_argument('--single-process')
+	chrome_options.add_argument('--data-path=/tmp/data-path')
+	chrome_options.add_argument('--ignore-certificate-errors')
+	chrome_options.add_argument('--homedir=/tmp')
+	chrome_options.add_argument('--disk-cache-dir=/tmp/cache-dir')
+	chrome_options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+	chrome_options.binary_location = os.getcwd() + "/bin/headless-chromium"
 
 else:
 	from settings import codice_utente, password_utente
@@ -119,7 +134,8 @@ def do_beep_login(browser):
 print("Let's go!\n")
 l.info("\nOpening browser...")
 if headless == 'true' and pi_mode != 'true':
-	browser = webdriver.Chrome(executable_path=chromedriver_bin, options=chrome_options)
+	#browser = webdriver.Chrome(executable_path=chromedriver_bin, options=chrome_options)
+	browser = webdriver.Chrome(chrome_options=chrome_options)
 else:
 	browser = webdriver.Firefox() if pi_mode == 'true' else Chrome()
 
